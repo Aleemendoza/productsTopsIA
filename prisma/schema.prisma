@@ -1,0 +1,19 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MercadoLibreToken {
+  id           Int      @id @default(1)
+  access_token String
+  refresh_token String
+  expires_in   Int
+  token_type   String
+  user_id      Int
+  updated_at   DateTime @updatedAt
+}
