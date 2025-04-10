@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
+import { MercadoLibreTokenData } from '@/types/ml';
 
-export async function saveToken(data: any) {
+export async function saveToken(data: MercadoLibreTokenData) {
   await prisma.mercadoLibreToken.upsert({
     where: { id: 1 },
     update: {

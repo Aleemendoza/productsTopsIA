@@ -1,15 +1,24 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export interface Product {
+  id: string;
+  title: string;
+  price: number;
+  thumbnail: string;
+  sold_quantity: number;
+  permalink: string;
+}
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 export async function POST(request: Request) {
-  const { productos } = await request.json();
+  const { productos }: { productos: Product[] } = await request.json();
 
   const prompt = `
     Analiza la siguiente lista de productos y recomiéndame cuál tiene mayor potencial para revender o promocionar basándote en su popularidad, precio y ventas:
 
-    ${productos.map((p: any, i: number) => `${i + 1}. ${p.title}, Precio: ${p.price}, Vendidos: ${p.sold_quantity}`).join('\n')}
+    ${productos.map((p, i) => `${i + 1}. ${p.title}, Precio: ${p.price}, Vendidos: ${p.sold_quantity}`).join('\n')}
 
     Justifica brevemente la elección.
   `;
