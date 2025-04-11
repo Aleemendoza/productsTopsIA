@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model MercadoLibreToken {
+model mercadoLibreToken {
   id           Int      @id @default(1)
   access_token String
   refresh_token String
