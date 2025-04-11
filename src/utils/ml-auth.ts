@@ -23,7 +23,9 @@ export async function saveToken(data: MercadoLibreTokenData) {
 }
 
 export async function loadToken() {
-  return await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
+  const token = await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
+  console.log('este es el token',token)
+  return token;
 }
 
 export async function refreshAccessToken() {

@@ -1,20 +1,20 @@
-import { loadToken, refreshAccessToken } from '@/utils/ml-auth';
+import { loadToken } from '@/utils/ml-auth';
 import { NextResponse } from 'next/server';
 
-async function getAccessToken(): Promise<string | null> {
-  let tokenData = await loadToken();
+// async function getAccessToken(): Promise<string | null> {
+//   let tokenData = await loadToken();
 
-  if (!tokenData || !tokenData.access_token) {
-    try {
-      tokenData = await refreshAccessToken();
-    } catch (e) {
-      console.error('Error al refrescar el token:', e);
-      return null;
-    }
-  }
+//   if (!tokenData || !tokenData.access_token) {
+//     try {
+//       tokenData = await refreshAccessToken();
+//     } catch (e) {
+//       console.error('Error al refrescar el token:', e);
+//       return null;
+//     }
+//   }
 
-  return tokenData?.access_token ?? null;
-}
+//   return tokenData?.access_token ?? null;
+// }
 
 export interface Product {
   id: string;
@@ -36,8 +36,7 @@ interface MercadoLibreApiProduct {
 
 export async function GET(request: Request) {
   try {
-    const accessToken = await getAccessToken();
-
+    const accessToken = await loadToken();
     if (!accessToken) {
       return NextResponse.json(
         { error: 'Token de acceso no disponible ni se pudo refrescar' },
