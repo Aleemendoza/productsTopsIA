@@ -15,7 +15,7 @@ interface Product {
 export default function TopProductsPage() {
   const [productos, setProductos] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [recomendacion, setRecomendacion] = useState<string>('');
+  // const [recomendacion, setRecomendacion] = useState<string>('');
   const [loadingIA, setLoadingIA] = useState(false);
 
   useEffect(() => {
@@ -28,16 +28,17 @@ export default function TopProductsPage() {
   }, []);
 
   const pedirRecomendacion = async () => {
-    setLoadingIA(true);
-    const res = await fetch('/api/recommend', {
-      method: 'POST',
-      body: JSON.stringify({ productos }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // setLoadingIA(true);
+    // const res = await fetch('/api/recommend', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ productos }),
+    //   headers: { 'Content-Type': 'application/json' },
+    // });
 
-    const data = await res.json();
-    setRecomendacion(data.recommendation);
+    // const data = await res.json();
+    // setRecomendacion(data.recommendation);
     setLoadingIA(false);
+    console.log('recomendaciones de la IA!')
   };
 
   if (loading)
@@ -57,12 +58,12 @@ export default function TopProductsPage() {
         {loadingIA ? "⏳ Analizando..." : "🧠 Pedir recomendación IA"}
       </button>
 
-      {recomendacion && (
+      {/* {recomendacion && (
         <div className="bg-green-100 p-4 rounded-md shadow mb-5">
           <h2 className="font-bold text-green-700 mb-2">Recomendación IA:</h2>
           <p>{recomendacion}</p>
         </div>
-      )}
+      )} */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {productos.map(prod => (
