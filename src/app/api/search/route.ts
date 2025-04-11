@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     }
 
     const data = await res.json();
-    const productos: Product[] = data.results?.map((prod: any) => ({
+    const productos: Product[] = data.results?.map((prod: Product) => ({
       id: prod.id,
       title: prod.title,
       price: prod.price,
