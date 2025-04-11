@@ -23,15 +23,15 @@ export async function saveToken(data: MercadoLibreTokenData) {
 }
 
 export async function loadToken() {
-  const token = await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
-  console.log('este es el token',token)
-  return token;
+  const data = await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
+  console.log('este es el token', data?.access_token)
+  return data;
 }
 
 export async function refreshAccessToken() {
   const tokenData = await loadToken();
 
-  if (!tokenData?.refresh_token) {
+  if (!tokenData?.access_token) {
     throw new Error('No refresh_token disponible');
   }
 
@@ -42,7 +42,7 @@ export async function refreshAccessToken() {
       grant_type: 'refresh_token',
       client_id: process.env.ML_CLIENT_ID!,
       client_secret: process.env.ML_CLIENT_SECRET!,
-      refresh_token: tokenData.refresh_token,
+      refresh_token: tokenData.access_token,
     }),
   });
 
