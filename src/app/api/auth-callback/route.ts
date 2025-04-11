@@ -1,13 +1,16 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { saveToken } from '@/utils/ml-auth';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  const cookieStore = await cookies();
-  const code_verifier = cookieStore.get('ml_code_verifier')?.value;
-
+  const cookieHeader = request.headers.get('cookie') || '';
+  const code_verifier = cookieHeader
+    .split(';')
+    .map(c => c.trim())
+    .find(c => c.startsWith('ml_code_verifier='))
+    ?.split('=')[1];
+  
   if (!code || !code_verifier) {
     return NextResponse.json({ error: 'Falta el código o el verifier' }, { status: 400 });
   }

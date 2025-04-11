@@ -5,7 +5,7 @@ export async function GET() {
   const code_verifier = generateCodeVerifier();
   const code_challenge = await generateCodeChallenge(code_verifier);
 
-  const url = new URL('https://auth.mercadolibre.com.ar/authorization');
+    const url = new URL('https://auth.mercadolibre.com.ar/authorization');
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('client_id', process.env.ML_CLIENT_ID!);
   url.searchParams.set('redirect_uri', process.env.ML_REDIRECT_URI!);
