@@ -1,38 +1,23 @@
 import { prisma } from '@/lib/prisma';
 import { MercadoLibreTokenData } from '@/types/ml';
 
+export async function loadToken() {
+  return await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
+}
+
 export async function saveToken(data: MercadoLibreTokenData) {
   await prisma.mercadoLibreToken.upsert({
     where: { id: 1 },
-    update: {
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_in: data.expires_in,
-      token_type: data.token_type,
-      user_id: data.user_id,
-    },
-    create: {
-      id: 1,
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_in: data.expires_in,
-      token_type: data.token_type,
-      user_id: data.user_id,
-    },
+    update: data,
+    create: { id: 1, ...data },
   });
-}
-
-export async function loadToken() {
-  const data = await prisma.mercadoLibreToken.findUnique({ where: { id: 1 } });
-  console.log('este es el token', data?.access_token)
-  return data;
 }
 
 export async function refreshAccessToken() {
   const tokenData = await loadToken();
 
-  if (!tokenData?.access_token) {
-    throw new Error('No refresh_token disponible');
+  if (!tokenData?.refresh_token) {
+    throw new Error('No hay refresh_token disponible');
   }
 
   const res = await fetch('https://api.mercadolibre.com/oauth/token', {
@@ -42,16 +27,16 @@ export async function refreshAccessToken() {
       grant_type: 'refresh_token',
       client_id: process.env.ML_CLIENT_ID!,
       client_secret: process.env.ML_CLIENT_SECRET!,
-      refresh_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
     }),
   });
 
   const newData = await res.json();
 
-  if (newData.access_token) {
-    await saveToken(newData);
-    return newData;
-  } else {
+  if (!newData.access_token) {
     throw new Error('No se pudo refrescar el token');
   }
+
+  await saveToken(newData);
+  return newData;
 }

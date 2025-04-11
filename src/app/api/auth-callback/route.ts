@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { saveToken } from '@/utils/ml-auth';
+// import { saveToken } from '@/utils/ml-auth';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -20,11 +20,11 @@ export async function GET(request: Request) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: process.env.ML_CLIENT_ID!,
-      client_secret: process.env.ML_CLIENT_SECRET!,
+      client_id: '7107839417335648',
+      client_secret: '5rn10lsU5JUVhSWfm51zSSso3at15DxQ',
       code,
       code_verifier,
-      redirect_uri: process.env.ML_REDIRECT_URI!,
+      redirect_uri: 'https://products-tops-ia.vercel.app/api/auth-callback',
     }),
   });
 
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'No se pudo obtener el token', detalle: data }, { status: 401 });
   }
 
-  await saveToken(data);
+  // await saveToken(data);
 
   return NextResponse.redirect('/');
 }

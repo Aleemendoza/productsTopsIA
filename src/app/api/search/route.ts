@@ -1,31 +1,7 @@
-import { loadToken } from '@/utils/ml-auth';
+import { loadToken, refreshAccessToken } from '@/utils/ml-auth';
 import { NextResponse } from 'next/server';
 
-// async function getAccessToken(): Promise<string | null> {
-//   let tokenData = await loadToken();
-
-//   if (!tokenData || !tokenData.access_token) {
-//     try {
-//       tokenData = await refreshAccessToken();
-//     } catch (e) {
-//       console.error('Error al refrescar el token:', e);
-//       return null;
-//     }
-//   }
-
-//   return tokenData?.access_token ?? null;
-// }
-
-export interface Product {
-  id: string;
-  title: string;
-  price: number;
-  thumbnail: string;
-  sold_quantity: number;
-  permalink: string;
-}
-
-interface MercadoLibreApiProduct {
+interface Product {
   id: string;
   title: string;
   price: number;
@@ -36,8 +12,13 @@ interface MercadoLibreApiProduct {
 
 export async function GET(request: Request) {
   try {
-    const accessToken = await loadToken();
-    if (!accessToken) {
+    let tokenData = await loadToken();
+
+    if (!tokenData?.access_token) {
+      tokenData = await refreshAccessToken();
+    }
+
+    if (!tokenData?.access_token) {
       return NextResponse.json(
         { error: 'Token de acceso no disponible ni se pudo refrescar' },
         { status: 401 }
@@ -50,13 +31,13 @@ export async function GET(request: Request) {
     const limit = 10;
 
     let apiUrl = `https://api.mercadolibre.com/sites/MLA/search?limit=${limit}&sort=sold_quantity_desc`;
-
     if (category) apiUrl += `&category=${category}`;
     if (q) apiUrl += `&q=${encodeURIComponent(q)}`;
-
+    console.log('tokenData', tokenData)
+    console.log('token', tokenData.access_token)
     const res = await fetch(apiUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${tokenData.access_token}`,
       },
     });
 
@@ -69,8 +50,7 @@ export async function GET(request: Request) {
     }
 
     const data = await res.json();
-
-    const productos: Product[] = (data.results as MercadoLibreApiProduct[])?.map((prod) => ({
+    const productos: Product[] = data.results?.map((prod: any) => ({
       id: prod.id,
       title: prod.title,
       price: prod.price,
@@ -78,6 +58,7 @@ export async function GET(request: Request) {
       sold_quantity: prod.sold_quantity,
       permalink: prod.permalink,
     })) ?? [];
+
     return NextResponse.json({ productos });
   } catch (error) {
     console.error('Error general:', error);

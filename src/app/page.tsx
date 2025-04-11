@@ -16,6 +16,32 @@ interface Product {
   permalink: string;
 }
 
+function Navbar() {
+  const [authUrl, setAuthUrl] = useState('');
+
+  useEffect(() => {
+    const clientId = '7107839417335648';
+    const redirectUri = 'https://products-tops-ia.vercel.app/api/auth-callback';
+    // const state = crypto.randomUUID(); // opcional para seguridad
+
+    const url = `https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    setAuthUrl(url);
+  }, []);
+
+  return (
+    <nav className="w-full bg-yellow-400 p-4 flex justify-between items-center shadow-md mb-6">
+      <h1 className="text-xl font-bold text-gray-900">🛍️ Products Tops IA</h1>
+      <a
+        href={authUrl}
+        className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-100 transition"
+      >
+        Iniciar sesión con Mercado Libre
+      </a>
+    </nav>
+  );
+}
+
+
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [productos, setProductos] = useState<Product[]>([]);
@@ -26,8 +52,20 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/categories')
       .then(res => res.json())
-      .then(setCategories);
-
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else if (Array.isArray(data.categories)) {
+          setCategories(data.categories);
+        } else {
+          console.warn('Respuesta inesperada en /api/categories:', data);
+          setCategories([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Error cargando categorías:', err);
+        setCategories([]);
+      });
     // Carga inicial con productos generales sin filtro
     fetchProducts();
   }, []);
@@ -38,7 +76,7 @@ export default function Home() {
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        setProductos(data.productos);
+        setProductos(data?.productos ?? []);
         setLoading(false);
       });
   };
@@ -54,6 +92,8 @@ export default function Home() {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">🔎 Buscador de Productos</h1>
 
@@ -124,5 +164,6 @@ export default function Home() {
         </div>
       )}
     </div>
+    </>
   );
 }
