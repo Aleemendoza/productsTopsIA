@@ -33,7 +33,13 @@ export async function refreshAccessToken() {
       throw new Error('No se pudo refrescar el token');
     }
 
-    await saveToken(newData);
+    await saveToken({
+      access_token: newData.access_token,
+      token_type: newData.token_type,
+      expires_in: newData.expires_in,
+      refresh_token: newData.refresh_token,
+      user_id: newData.user_id,
+    });
     return newData;
   }
 
