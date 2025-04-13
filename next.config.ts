@@ -1,10 +1,13 @@
-export default {
+// next.config.js
+const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.mlstatic.com',
+        hostname: 'placehold.co'
       },
     ],
   },
 };
+
+module.exports = nextConfig;

@@ -1,5 +1,5 @@
-import { loadToken, refreshAccessToken } from '@/utils/ml-auth';
 import { NextResponse } from 'next/server';
+import { loadToken, refreshAccessToken } from '@/utils/ml-auth';
 
 interface Product {
   id: string;
@@ -8,16 +8,41 @@ interface Product {
   thumbnail: string;
   sold_quantity: number;
   permalink: string;
+  category: string;
 }
 
 export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    const q = url.searchParams.get('q')?.toLowerCase() || '';
+    const limit = Number(url.searchParams.get('limit')) || 200;
+
+    // // ✅ MODO DESARROLLO — usar JSON local
+    // // if (process.env.NODE_ENV !== 'production') {
+    //   const filePath = path.join(process.cwd(), 'src/products_mock.json');
+    //   const fileData = await fs.readFile(filePath, 'utf-8');
+    //   const allProducts: Product[] = JSON.parse(fileData);
+
+    //   let filtered = allProducts;
+
+    //   if (category) {
+    //     filtered = filtered.filter(prod => prod.category === category);
+    //   }
+
+    //   if (q) {
+    //     filtered = filtered.filter(prod =>
+    //       prod.title.toLowerCase().includes(q)
+    //     );
+    //   }
+
+    //   const productos = filtered.slice(0, limit);
+    //   return NextResponse.json({ productos });
+    // }
+
+    // ✅ MODO PRODUCCIÓN — usar API real de ML
     let tokenData = await loadToken();
-
-    if (!tokenData?.access_token) {
-      tokenData = await refreshAccessToken();
-    }
-
+    if (!tokenData?.access_token) tokenData = await refreshAccessToken();
     if (!tokenData?.access_token) {
       return NextResponse.json(
         { error: 'Token de acceso no disponible ni se pudo refrescar' },
@@ -25,16 +50,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const url = new URL(request.url);
-    const category = url.searchParams.get('category');
-    const q = url.searchParams.get('q') || '';
-    const limit = 10;
-
     let apiUrl = `https://api.mercadolibre.com/sites/MLA/search?limit=${limit}&sort=sold_quantity_desc`;
     if (category) apiUrl += `&category=${category}`;
     if (q) apiUrl += `&q=${encodeURIComponent(q)}`;
-    console.log('tokenData', tokenData)
-    console.log('token', tokenData.access_token)
+
     const res = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
@@ -57,6 +76,7 @@ export async function GET(request: Request) {
       thumbnail: prod.thumbnail.replace('http://', 'https://'),
       sold_quantity: prod.sold_quantity,
       permalink: prod.permalink,
+      category: category || 'General'
     })) ?? [];
 
     return NextResponse.json({ productos });

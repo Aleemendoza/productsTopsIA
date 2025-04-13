@@ -22,14 +22,9 @@ function Navbar() {
   useEffect(() => {
     const clientId = '7107839417335648';
     const redirectUri = 'https://products-tops-ia.vercel.app/api/auth-callback';
-    const state = crypto.randomUUID();
-    const codeVerifier = crypto.randomUUID().replace(/-/g, '');
+    // const state = crypto.randomUUID(); // opcional para seguridad
 
-  // Guardar el code_verifier en localStorage
-    localStorage.setItem('ml_code_verifier', codeVerifier);
-
-    const url = `https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&code_challenge=${codeVerifier}&code_challenge_method=plain`;
-
+    const url = `https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}`;
     setAuthUrl(url);
   }, []);
 
