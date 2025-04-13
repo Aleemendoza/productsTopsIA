@@ -37,7 +37,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'No se pudo obtener el token' }, { status: 500 });
   }
 
-  await saveToken(data);
+  await saveToken({
+    access_token: data.access_token,
+    token_type: data.token_type,
+    expires_in: data.expires_in,
+    refresh_token: data.refresh_token,
+    user_id: data.user_id,
+  });
 
   const response = NextResponse.redirect('/');
   response.cookies.set('access_token', data.access_token, {
