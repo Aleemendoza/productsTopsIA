@@ -3,13 +3,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveToken } from '@/utils/ml-auth';
 import {  generateCodeVerifier } from '@/utils/pkce';
+import Cookies from 'js-cookie'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get('code');
-
+  
   const code_verifier = generateCodeVerifier();
-  // const code_challenge = await generateCodeChallenge(code_verifier);
+  Cookies.set('ml_code_verifier', code_verifier, { secure: true })
+  
   console.log('code',code);
   console.log('code_verifier',code_verifier);
   if (!code || !code_verifier) {
