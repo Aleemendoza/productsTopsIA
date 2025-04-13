@@ -8,9 +8,23 @@ export async function loadToken() {
 export async function saveToken(data: MercadoLibreTokenData) {
   await prisma.mercadoLibreToken.upsert({
     where: { id: 1 },
-    update: data,
-    create: { id: 1, ...data },
+    update: {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token ?? null,
+      token_type: data.token_type,
+      expires_in: data.expires_in,
+      user_id: data.user_id,
+    },
+    create: {
+      id: 1,
+      access_token: data.access_token,
+      refresh_token: data.refresh_token ?? null,
+      token_type: data.token_type,
+      expires_in: data.expires_in,
+      user_id: data.user_id,
+    },
   });
+  
 }
 export async function refreshAccessToken() {
   const tokenData = await loadToken();

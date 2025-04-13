@@ -9,11 +9,11 @@ datasource db {
 }
 
 model mercadoLibreToken {
-  id           Int      @id @default(1)
-  access_token String
+  id            Int      @id @default(1)
+  access_token  String
   refresh_token String?
-  expires_in   Int
-  token_type   String
-  user_id      Int
-  updated_at   DateTime? @updatedAt
+  expires_in    Int
+  token_type    String
+  user_id       Int
+  updated_at    DateTime @updatedAt
 }
