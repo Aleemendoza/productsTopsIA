@@ -10,7 +10,8 @@ export async function GET(req: NextRequest) {
 
   const code_verifier = generateCodeVerifier();
   // const code_challenge = await generateCodeChallenge(code_verifier);
-  // console.lo
+  console.log('code',code);
+  console.log('code_verifier',code_verifier);
   if (!code || !code_verifier) {
     return NextResponse.json({ error: 'Falta el código o el code_verifier' }, { status: 400 });
   }
