@@ -20,7 +20,7 @@ export async function refreshAccessToken() {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        grant_type: 'client-credenctials',
+        grant_type: 'client_credentials',
         client_id: process.env.ML_CLIENT_ID!,
         client_secret: process.env.ML_CLIENT_SECRET!
       }),
