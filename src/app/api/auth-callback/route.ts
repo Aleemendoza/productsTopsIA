@@ -1,16 +1,16 @@
 
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { saveToken } from '@/utils/ml-auth';
-import { generateCodeChallenge, generateCodeVerifier } from '@/utils/pkce';
+import {  generateCodeVerifier } from '@/utils/pkce';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get('code');
 
   const code_verifier = generateCodeVerifier();
-  const code_challenge = await generateCodeChallenge(code_verifier);
-
+  // const code_challenge = await generateCodeChallenge(code_verifier);
+  // console.lo
   if (!code || !code_verifier) {
     return NextResponse.json({ error: 'Falta el código o el code_verifier' }, { status: 400 });
   }
