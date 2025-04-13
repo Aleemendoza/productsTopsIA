@@ -1,14 +1,18 @@
 
-// import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { saveToken } from '@/utils/ml-auth';
+import { generateCodeChallenge, generateCodeVerifier } from '@/utils/pkce';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get('code');
 
-  if (!code) {
-    return NextResponse.json({ error: 'Falta el código ' }, { status: 400 });
+  const code_verifier = generateCodeVerifier();
+  const code_challenge = await generateCodeChallenge(code_verifier);
+
+  if (!code || !code_verifier) {
+    return NextResponse.json({ error: 'Falta el código o el code_verifier' }, { status: 400 });
   }
 
   const res = await fetch('https://api.mercadolibre.com/oauth/token', {
@@ -22,6 +26,7 @@ export async function GET(req: NextRequest) {
       client_secret: process.env.ML_CLIENT_SECRET!,
       code,
       redirect_uri: process.env.ML_REDIRECT_URI!,
+      code_verifier: code_verifier,
     }),
   });
 
@@ -34,5 +39,14 @@ export async function GET(req: NextRequest) {
 
   await saveToken(data);
 
-  return NextResponse.redirect(new URL('/', req.url));
+  // Opcional: podés setear una cookie con el access_token (solo para pruebas locales)
+  const response = NextResponse.redirect('/');
+  response.cookies.set('access_token', data.access_token, {
+    httpOnly: true,
+    secure: true,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7, // 7 días
+  });
+
+  return response;
 }

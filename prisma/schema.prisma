@@ -15,5 +15,5 @@ model mercadoLibreToken {
   expires_in   Int
   token_type   String
   user_id      Int
-  updated_at   DateTime @updatedAt
+  updated_at   DateTime? @updatedAt
 }
