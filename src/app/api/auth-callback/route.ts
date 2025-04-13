@@ -32,14 +32,13 @@ export async function GET(req: NextRequest) {
 
   const data = await res.json();
 
-  if (!data.access_token || !data.refresh_token) {
+  if (!data.access_token) {
     console.error('Error al obtener el token:', data);
     return NextResponse.json({ error: 'No se pudo obtener el token' }, { status: 500 });
   }
 
   await saveToken(data);
 
-  // Opcional: podés setear una cookie con el access_token (solo para pruebas locales)
   const response = NextResponse.redirect('/');
   response.cookies.set('access_token', data.access_token, {
     httpOnly: true,
